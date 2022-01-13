@@ -1,6 +1,6 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 public class Etat {
     public static final int LIGNE = 6;
@@ -63,7 +63,14 @@ public class Etat {
      * @return un Etat
      */
     public Etat copieEtat() {
-        return new Etat(this.joueur, this.plateau);
+        char tab[][] = new char[LIGNE][COLONNE];
+        for(int i = 0; i< LIGNE; i++){
+            for(int j = 0; j < COLONNE; j++){
+                tab[i][j] = plateau[i][j];
+            }
+        }
+        int jour = joueur;
+        return new Etat(jour, tab);
     }
 
     public List<Coup> coupsPossibles(){
@@ -88,16 +95,84 @@ public class Etat {
         if(this.getPlateau()[0][coup.getColonne()] != ' ')
             return false;
 
-        int i = Etat.LIGNE -1;
-        while (this.getPlateau()[i--][coup.getColonne()] == ' ');
-        this.getPlateau()[i][coup.getColonne()] = 'O';
+        this.getPlateau()[0][coup.getColonne()] = joueur == 0 ? 'O' : 'X' ;
+        for (int i = 1; i < LIGNE; i++){
+            if(this.getPlateau()[i][coup.getColonne()] == ' ') {
+                this.getPlateau()[i][coup.getColonne()] = joueur == 0 ? 'O' : 'X';
+                this.getPlateau()[i-1][coup.getColonne()] = ' ' ;
+            }
+        }
+        //while (i< Etat.LIGNE && this.getPlateau()[i++][coup.getColonne()] == ' ');
+        //this.getPlateau()[i-1][coup.getColonne()] = joueur == 0 ? 'O' : 'X' ;
 
         this.changerJoueur();
         return true;
     }
 
     public FinDePartie testFin(){
-        return null;
+        int k,n = 0;
+        for(int i = 0; i < LIGNE; i++){
+            for(int j = 0; j < COLONNE; j++){
+                if (plateau[i][j] != ' ') {
+                    n++; //nb de coups joués
+
+                    //lignes
+                    k=0;
+                    while (k < 4 && i + k < LIGNE && plateau[i+k][j] == plateau[i][j])
+                        k++;
+                    if( k == 4) return plateau[i][j] == 'X' ? FinDePartie.ORDI_GAGNE : FinDePartie.HUMAIN_GAGNE;
+
+                    // colonnes
+                    k=0;
+                    while ( k < 4 && j+k < COLONNE && plateau[i][j+k] == plateau[i][j] )
+                        k++;
+                    if ( k == 4 )
+                        return plateau[i][j] == 'X'? FinDePartie.ORDI_GAGNE : FinDePartie.HUMAIN_GAGNE;
+
+                    // diagonales
+                    k=0;
+                    while ( k < 4 && i+k < LIGNE && j+k < COLONNE && plateau[i+k][j+k] == plateau[i][j] )
+                        k++;
+                    if ( k == 4 )
+                        return plateau[i][j] == 'X'? FinDePartie.ORDI_GAGNE : FinDePartie.HUMAIN_GAGNE;
+
+                    k=0;
+                    while ( k < 4 && i+k < LIGNE && j-k >= 0 && plateau[i+k][j-k] == plateau[i][j] )
+                        k++;
+                    if ( k == 4 )
+                        return plateau[i][j] == 'O'? FinDePartie.ORDI_GAGNE : FinDePartie.HUMAIN_GAGNE;
+
+                }
+            }
+        }
+        if(n == COLONNE*LIGNE) return FinDePartie.MATCHNUL;
+        return FinDePartie.NON;
+    }
+
+    public void ordijoue_mcts(int tempsmax){
+        long tic, toc;
+        tic = System.currentTimeMillis();
+        int temps;
+
+        List<Coup> coups;
+        Coup meilleur_coup;
+
+        //Créer l'arbre de recherche
+        Noeud racine = new Noeud();
+        racine.nouveauNoeud(null);
+        racine.setEtat(copieEtat());
+
+        //Créer les premiers noeuds:
+        coups = coupsPossibles();
+        Noeud enfant = new Noeud();
+        for (Coup coup: coups) {
+            enfant = enfant.ajouterEnfant(coup);
+        }
+
+        int r = new Random().nextInt(7);
+        meilleur_coup = coups.get(r);
+
+        jouerCoup(meilleur_coup);
     }
 
     /**

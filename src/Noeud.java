@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 
 public class Noeud {
@@ -11,6 +12,16 @@ public class Noeud {
     //Pour MCTS
     private int nb_victoires;
     private int nb_simus;
+
+    public Noeud(){
+        this.joueur = 0;
+        this.coup = new Coup(0);
+        etat = new Etat();
+        parent = null;
+        enfant = new ArrayList<>();
+        nb_victoires = 0;
+        nb_simus = 0;
+    }
 
     public void setCoup(Coup coup) {
         this.coup = coup;
@@ -98,7 +109,7 @@ public class Noeud {
 
     public Noeud ajouterEnfant(Coup coup){
         Noeud enfant = nouveauNoeud(coup);
-        this.parent.enfant.add(enfant);
+        this.enfant.add(enfant);
         return enfant;
     }
 }
