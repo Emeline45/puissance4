@@ -149,28 +149,44 @@ public class Etat {
         return FinDePartie.NON;
     }
 
-    public void ordijoue_mcts(int tempsmax){
+    public void ordijoue_mcts(long tempsmax){
         long tic, toc;
         tic = System.currentTimeMillis();
-        int temps;
+        long temps;
 
         List<Coup> coups;
-        Coup meilleur_coup;
+        Coup meilleur_coup = new Coup();
 
         //Créer l'arbre de recherche
         Noeud racine = new Noeud();
-        racine.nouveauNoeud(null);
+        racine = Noeud.nouveauNoeud(null,null);
         racine.setEtat(copieEtat());
 
         //Créer les premiers noeuds:
         coups = coupsPossibles();
         Noeud enfant = new Noeud();
         for (Coup coup: coups) {
-            enfant = enfant.ajouterEnfant(coup);
+            enfant = racine.ajouterEnfant(coup);
+
+            //On vérifie si au tour suivant, l'ordi peut gagner
+            //Ça en deviendra le meilleur coup
+            FinDePartie fin = enfant.getEtat().testFin();
+            if(fin == FinDePartie.ORDI_GAGNE){
+                meilleur_coup = coup;
+            }else{
+                //Faire d'autre vérification
+            }
         }
+        do{
+
+            toc = System.currentTimeMillis();
+            temps = (toc - tic);
+        }while (temps < tempsmax);
 
         int r = new Random().nextInt(7);
-        meilleur_coup = coups.get(r);
+        if(meilleur_coup.getColonne() == -1)
+            meilleur_coup = coups.get(r);
+        //meilleur_coup = coups.get(r);
 
         jouerCoup(meilleur_coup);
     }

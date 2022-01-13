@@ -85,11 +85,11 @@ public class Noeud {
 
     ////////////////////////////////////////////////////////////////////////:
 
-    public Noeud nouveauNoeud(Coup coup){
+    public static Noeud nouveauNoeud(Noeud parent, Coup coup){
         Noeud noeud = new Noeud();
 
-        if(this.parent != null && coup != null){
-            noeud.etat = this.etat.copieEtat();
+        if(parent != null && coup != null){
+            noeud.etat = parent.etat.copieEtat();
             noeud.etat.jouerCoup(coup);
             noeud.setCoup(coup);
             noeud.changerJoueur();
@@ -108,7 +108,7 @@ public class Noeud {
     }
 
     public Noeud ajouterEnfant(Coup coup){
-        Noeud enfant = nouveauNoeud(coup);
+        Noeud enfant = Noeud.nouveauNoeud(this, coup);
         this.enfant.add(enfant);
         return enfant;
     }

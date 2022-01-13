@@ -5,6 +5,8 @@ public class Coup {
     /* Le joueur ne peut choisir que la colonne dans le puissance 4.*/
     private int colonne;
 
+    public Coup(){colonne = -1;}
+
     public Coup(int j){
         colonne = j;
     }
