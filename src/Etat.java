@@ -183,7 +183,7 @@ public class Etat {
             temps = (toc - tic);
         }while (temps < tempsmax);
 
-        int r = new Random().nextInt(7);
+        int r = new Random().nextInt(coups.size());
         if(meilleur_coup.getColonne() == -1)
             meilleur_coup = coups.get(r);
         //meilleur_coup = coups.get(r);
