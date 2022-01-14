@@ -24,7 +24,7 @@ public class Main {
                } while (!etat.jouerCoup(coup));
            }else{
                //tour de l'ordinateur
-               etat.ordijoue_mcts(5*60*1000);
+               etat.ordijoue_mcts(5000 /* 5s */);
            }
            fin = etat.testFin();
         } while (fin == FinDePartie.NON);
