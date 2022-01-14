@@ -206,8 +206,12 @@ public class Etat {
 
         for(i=1; i <= LIGNE; i++) {
             string.append(" ").append(i).append(" ┃");
-            for ( j = 0; j < COLONNE; j++)
-                string.append(" ").append(plateau[i-1][j]).append(j==COLONNE-1 ? " ┃" : " │");
+            for ( j = 0; j < COLONNE; j++) {
+                string.append(" ");
+                char x = plateau[i-1][j];
+                string.append(x == 'X' ? "\033[41m\033[31mX" : x == 'O' ? "\033[43m\033[33mO" : " ").append("\033[0m");
+                string.append(j == COLONNE - 1 ? " ┃" : " │");
+            }
             string.append("\n").append(i==LIGNE ? "━━━┻━━━┷━━━┷━━━┷━━━┷━━━┷━━━┷━━━┛" : "━━━╉───┼───┼───┼───┼───┼───┼───┨").append("\n");
         }
         return string.toString();
