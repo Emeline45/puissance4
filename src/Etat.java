@@ -157,41 +157,61 @@ public class Etat {
         tic = System.currentTimeMillis();
         long temps;
 
-        List<Coup> coups;
-        Coup meilleur_coup = new Coup();
+        List<Coup> coups = coupsPossibles();
 
         //Créer l'arbre de recherche
-        Noeud racine = new Noeud();
-        racine = Noeud.nouveauNoeud(null,null);
+        Noeud racine = Noeud.nouveauNoeud(null,null);
         racine.setEtat(copieEtat());
 
         //Créer les premiers noeuds:
-        coups = coupsPossibles();
-        Noeud enfant = new Noeud();
-        for (Coup coup: coups) {
-            enfant = racine.ajouterEnfant(coup);
+//        for (Coup coup: coups) {
+//            enfant = racine.ajouterEnfant(coup);
+//
+//            //On vérifie si au tour suivant, l'ordi peut gagner
+//            //Ça en deviendra le meilleur coup
+//            FinDePartie fin = enfant.getEtat().testFin();
+//            if(fin == FinDePartie.ORDI_GAGNE){
+//                meilleur_coup = coup;
+//            }else{
+//                //Faire d'autre vérification
+//            }
+//        }
+        do {
+            Noeud toExpand = selection(racine);
+            if (toExpand == null)
+                break; // l'arbre a été complètement exploré, plus aucun noeud n'est sélectionnable
 
-            //On vérifie si au tour suivant, l'ordi peut gagner
-            //Ça en deviendra le meilleur coup
-            FinDePartie fin = enfant.getEtat().testFin();
-            if(fin == FinDePartie.ORDI_GAGNE){
-                meilleur_coup = coup;
-            }else{
-                //Faire d'autre vérification
-            }
-        }
-        do{
+            Noeud expanded = expansion(toExpand);
+            FinDePartie status = simulation(expanded);
+            expanded.propagationScore();
 
             toc = System.currentTimeMillis();
             temps = (toc - tic);
-        }while (false); //' (temps < tempsmax);
+        } while (temps < tempsmax);
 
-        int r = new Random().nextInt(coups.size());
-        if(meilleur_coup.getColonne() == -1)
-            meilleur_coup = coups.get(r);
-        //meilleur_coup = coups.get(r);
+        Coup best = null;
+        double val = Double.NEGATIVE_INFINITY;
+        for (Noeud enf : racine.getEnfant()) {
+            double val2 = enf.ratio();
+            if (val2 > val) {
+                val = val2;
+                best = enf.getCoup();
+            }
+        }
 
-        jouerCoup(meilleur_coup);
+        jouerCoup(best);
+    }
+
+    private Noeud selection(Noeud racine) {
+        return racine; // TODO
+    }
+
+    private Noeud expansion(Noeud node) {
+        return node; // TODO
+    }
+
+    private FinDePartie simulation(Noeud racineLocale) {
+        return FinDePartie.NON; // TODO
     }
 
     /**

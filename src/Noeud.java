@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class Noeud {
     /**
@@ -120,6 +121,37 @@ public class Noeud {
         Noeud enfant = Noeud.nouveauNoeud(this, coup);
         this.enfant.add(enfant);
         return enfant;
+    }
+
+    public Coup selection() {
+        Coup best = null;
+        double val = Double.NEGATIVE_INFINITY;
+
+        for (Coup c : this.etat.coupsPossibles()) {
+            Optional<Noeud> n = this.enfant.stream().filter(node -> node.coup.equals(c)).findFirst();
+            if (n.isEmpty()) {
+                // chemin non exploré : on explore
+                return c;
+            }
+            Noeud nd = n.get();
+            if (nd.enfant.size() > 0) {
+                // noeud non terminal mais déjà (partiellement) exploré
+                double ucb1 = nd.calculerUCB1();
+                if (ucb1 > val) {
+                    best = c;
+                    val = ucb1;
+                }
+            }
+        }
+
+        return best;
+    }
+
+    public double ratio() {
+        if (nb_simus != 0)
+            return (double) nb_victoires / (double) nb_simus;
+        else
+            return Double.POSITIVE_INFINITY;
     }
 
     /**
