@@ -15,9 +15,9 @@ public class Main {
 
         //boucle de jeu
         do{
-           System.out.println(etat);
+          System.out.println(etat);
 
-           if(etat.getJoueur() == 0){
+           if(etat.getJoueur() == Etat.HUMAN_PLAYER){
                //tour de l'humain
                do{
                    coup = Coup.demanderCoup();

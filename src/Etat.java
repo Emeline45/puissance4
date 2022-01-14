@@ -6,6 +6,9 @@ public class Etat {
     public static final int LIGNE = 6;
     public static final int COLONNE = 7;
 
+    public static final int HUMAN_PLAYER = 0;
+    public static final int COMPUTER_PLAYER = 1;
+
     private int joueur; //à qui de jouer
     private char plateau[][]; //ligne/colonne
 
@@ -13,7 +16,7 @@ public class Etat {
      * Constructeur de l'Etat initial
      */
     public Etat() {
-        joueur = 1; //L'ordinateur qui commence :)
+        joueur = COMPUTER_PLAYER; //L'ordinateur qui commence :)
         plateau = new char[LIGNE][COLONNE]; //plateau du Puissance 4
 
         //Initialisation du plateau vide
@@ -95,10 +98,10 @@ public class Etat {
         if(this.getPlateau()[0][coup.getColonne()] != ' ')
             return false;
 
-        this.getPlateau()[0][coup.getColonne()] = joueur == 0 ? 'O' : 'X' ;
+        this.getPlateau()[0][coup.getColonne()] = joueur == HUMAN_PLAYER ? 'O' : 'X' ;
         for (int i = 1; i < LIGNE; i++){
             if(this.getPlateau()[i][coup.getColonne()] == ' ') {
-                this.getPlateau()[i][coup.getColonne()] = joueur == 0 ? 'O' : 'X';
+                this.getPlateau()[i][coup.getColonne()] = joueur == HUMAN_PLAYER ? 'O' : 'X';
                 this.getPlateau()[i-1][coup.getColonne()] = ' ' ;
             }
         }
@@ -140,7 +143,7 @@ public class Etat {
                     while ( k < 4 && i+k < LIGNE && j-k >= 0 && plateau[i+k][j-k] == plateau[i][j] )
                         k++;
                     if ( k == 4 )
-                        return plateau[i][j] == 'O'? FinDePartie.ORDI_GAGNE : FinDePartie.HUMAIN_GAGNE;
+                        return plateau[i][j] == 'X'? FinDePartie.ORDI_GAGNE : FinDePartie.HUMAIN_GAGNE;
 
                 }
             }
@@ -181,7 +184,7 @@ public class Etat {
 
             toc = System.currentTimeMillis();
             temps = (toc - tic);
-        }while (temps < tempsmax);
+        }while (false); //' (temps < tempsmax);
 
         int r = new Random().nextInt(coups.size());
         if(meilleur_coup.getColonne() == -1)
