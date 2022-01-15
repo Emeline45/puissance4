@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        long timeToThink = 5L;
+        long timeToThink = 35L;
         if (args.length >= 1) {
             timeToThink = Long.parseLong(args[0]);
         }

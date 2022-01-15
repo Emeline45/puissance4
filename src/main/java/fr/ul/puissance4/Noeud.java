@@ -107,6 +107,14 @@ public class Noeud {
         this.ucb1 = 0.d;
     }
 
+    public int getNb_victoires() {
+        return nb_victoires;
+    }
+
+    public int getNb_simus() {
+        return nb_simus;
+    }
+
     public Coup getCoup() {
         return coup;
     }
@@ -125,6 +133,14 @@ public class Noeud {
 
     public List<Noeud> getEnfants() {
         return enfants;
+    }
+
+    public Noeud getEnfants(Coup coup) {
+        for (Noeud c : enfants){
+            if(c.getCoup() == coup)
+                return c;
+        }
+        return new Noeud();
     }
 
     /**

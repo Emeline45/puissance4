@@ -257,10 +257,12 @@ public class Etat {
             FinDePartie status = simulation(expanded);
             expanded.propagationScore(status);
 
+
             // on applique MCTS jusqu'à avoir dépassé le temps limite
         } while (System.currentTimeMillis() - tic < tempsmax);
         progress.interrupt();
 
+        System.out.println("\n Le nombre de simulation réalisée : " + racine.getNb_simus());
         Coup best = null;
         double val = Double.NEGATIVE_INFINITY;
 
@@ -273,34 +275,45 @@ public class Etat {
         Noeud enfant = new Noeud();
         Coup meilleur_coup = null;
         racineE.getEtat().setJoueur(HUMAN_PLAYER);
+
+        Noeud e1 = null;
         for (Coup coup: coups) {
             enfant = new Noeud(racineE, coup);
 
             FinDePartie fin = enfant.getEtat().testFin();
             if(fin == FinDePartie.HUMAIN_GAGNE){
                 meilleur_coup = coup;
+                e1 = enfant;
             }
         }
         //Si le joueur peut gagner
         if(meilleur_coup != null){
             //Vérifier si l'ordi peut gagner (PRIORITAIRE)
             for (Noeud enf : racine.getEnfants()) {
-                if (enf.getEtat().testFin() == FinDePartie.ORDI_GAGNE)
+                if (enf.getEtat().testFin() == FinDePartie.ORDI_GAGNE) {
                     meilleur_coup = enf.getCoup();
+                    e1 = enf;
+                }
             }
+            System.out.println("\n La probabilité de victoire est : " + e1.ratio());
             jouerCoup(meilleur_coup);
         }
         else{
             // on récupère le meilleur coup à jouer (celui qui mène au + grand nombre de parties gagnées)
+            Noeud e = null;
             for (Noeud enf : racine.getEnfants()) {
                 double val2 = enf.ratio();
                 if (val2 > val) {
                     val = val2;
                     best = enf.getCoup();
+                    e = enf;
                 }
             } // et on joue ce coup
+
+            System.out.println("\n La probabilité de victoire est : " + e.ratio());
             jouerCoup(best);
         }
+
 
 
     }
