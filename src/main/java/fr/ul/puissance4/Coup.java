@@ -22,7 +22,7 @@ public class Coup {
 
     /**
      * Demande à l'humain quel coup jouer
-     * @return le fr.ul.puissance4.Coup demandé
+     * @return le Coup demandé
      */
     public static Coup demanderCoup(){
         System.out.println("\n \t Quelle colonne ? ");

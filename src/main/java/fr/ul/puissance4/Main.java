@@ -11,7 +11,7 @@ public class Main {
         Etat etat = new Etat();
 
         //Choisir qui commence :
-        System.out.println("Qui commence (0 : humain, 1 : ordinateur) ? ");
+        System.out.printf("Qui commence (%d : humain, %d : ordinateur) ? ", Etat.HUMAN_PLAYER, Etat.COMPUTER_PLAYER);
         Scanner scanner = new Scanner(System.in);
         etat.setJoueur(scanner.nextInt());
 
