@@ -22,7 +22,7 @@ public class Main {
 
         //boucle de jeu
         do {
-            System.out.print("\033[2J\033[0;0H");
+            //System.out.print("\033[2J\033[0;0H");
             System.out.println(etat);
 
             if(etat.getJoueur() == Etat.HUMAN_PLAYER) {
