@@ -265,15 +265,43 @@ public class Etat {
         double val = Double.NEGATIVE_INFINITY;
 
         // on récupère le meilleur coup à jouer (celui qui mène au + grand nombre de parties gagnées)
-        for (Noeud enf : racine.getEnfants()) {
+        temp:for (Noeud enf : racine.getEnfants()) {
             double val2 = enf.ratio();
             if (val2 > val) {
                 val = val2;
                 best = enf.getCoup();
             }
+            for(Noeud enfenf : enf.getEnfants()){
+                if(enfenf.getEtat().testFin() == FinDePartie.HUMAIN_GAGNE){
+                    best = enf.getCoup();
+                    break temp;
+                }
+            }
         }
-        // et on joue ce coup
-        jouerCoup(best);
+
+        //Vérifier que le joueur n'e va pas gagner au prochain tour !
+        Noeud racineE = new Noeud();
+        racineE = new Noeud(null, null);
+        racineE.setEtat(copieEtat());
+        List<Coup> coups = coupsPossibles();
+        Noeud enfant = new Noeud();
+        Coup meilleur_coup = null;
+        racineE.getEtat().setJoueur(HUMAN_PLAYER);
+        for (Coup coup: coups) {
+            enfant = new Noeud(racineE, coup);
+
+            FinDePartie fin = enfant.getEtat().testFin();
+            if(fin == FinDePartie.HUMAIN_GAGNE){
+                meilleur_coup = coup;
+            }
+        }
+
+        if(meilleur_coup != null)
+            jouerCoup(meilleur_coup);
+        else // et on joue ce coup
+            jouerCoup(best);
+
+
     }
 
     /**
