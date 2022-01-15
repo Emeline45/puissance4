@@ -220,6 +220,28 @@ public class Etat {
         Noeud racine = new Noeud(null, null);
         racine.setEtat(copieEtat());
 
+        Thread progress = new Thread(() -> {
+            final String indicators = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏";
+            int i = 0;
+
+            while (true) {
+                System.out.print("\r" + indicators.charAt(i) + " L'ordinateur réfléchit... (" + ((tempsmax - (System.currentTimeMillis() - tic)) / 1000) + "s restantes)");
+                System.out.flush();
+
+                try {
+                    Thread.sleep(75);
+                } catch (InterruptedException e) {
+                    // do nothing
+                    break;
+                }
+
+                i = ++i > indicators.length() - 1 ? 0 : i;
+            }
+
+            System.out.println();
+        });
+
+        progress.start();
         do {
             // MCTS :
             // - sélection du noeud le + propice à être développé
@@ -237,6 +259,7 @@ public class Etat {
 
             // on applique MCTS jusqu'à avoir dépassé le temps limite
         } while (System.currentTimeMillis() - tic < tempsmax);
+        progress.interrupt();
 
         Coup best = null;
         double val = Double.NEGATIVE_INFINITY;

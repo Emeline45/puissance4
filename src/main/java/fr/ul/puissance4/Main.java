@@ -4,6 +4,11 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
+        long timeToThink = 5L;
+        if (args.length >= 1) {
+            timeToThink = Long.parseLong(args[0]);
+        }
+
         Coup coup;
         FinDePartie fin;
 
@@ -17,17 +22,21 @@ public class Main {
 
         //boucle de jeu
         do {
-          System.out.println(etat);
+            System.out.print("\033[2J\033[0;0H");
+            System.out.println(etat);
 
-           if(etat.getJoueur() == Etat.HUMAN_PLAYER) {
-               //tour de l'humain
-               do {
-                   coup = Coup.demanderCoup();
-               } while (!etat.jouerCoup(coup));
-           } else {
-               //tour de l'ordinateur
-               etat.ordijoue_mcts(5000 /* 5s */);
-           }
+            if(etat.getJoueur() == Etat.HUMAN_PLAYER) {
+                //tour de l'humain
+                do {
+                    coup = Coup.demanderCoup();
+                } while (!etat.jouerCoup(coup));
+            } else {
+                //tour de l'ordinateur
+                etat.ordijoue_mcts(timeToThink * 1000);
+
+                // `racine` non libéré de la mémoire ?
+                System.gc();
+            }
         } while ((fin = etat.testFin()) == FinDePartie.NON);
 
         System.out.println(etat);
