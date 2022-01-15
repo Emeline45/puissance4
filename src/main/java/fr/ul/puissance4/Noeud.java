@@ -12,7 +12,7 @@ public class Noeud {
      * coefficient trop petit empêche de voir de meilleurs coups.
      * <p>
      * Par défaut égal à <code>Math.sqrt(2)</code>.
-     **/
+  NEGA*/
     private static final double C = Math.sqrt(2);
 
     /**
@@ -241,7 +241,7 @@ public class Noeud {
      *        ⎪    N(i)
      *        ⎪
      *        ⎪
-     *        ⎪  + ∞            sinon
+     *        ⎪  - ∞            sinon
      *        ⎩
      * }</pre>
      *
@@ -251,7 +251,7 @@ public class Noeud {
         if (nb_simus != 0)
             return (double) nb_victoires / (double) nb_simus;
         else
-            return Double.POSITIVE_INFINITY;
+            return Double.NEGATIVE_INFINITY;
     }
 
     /**
