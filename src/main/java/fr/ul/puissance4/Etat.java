@@ -1,7 +1,9 @@
 package fr.ul.puissance4;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 public class Etat {
     public static final int LIGNE = 6;
@@ -212,7 +214,7 @@ public class Etat {
     public void ordijoue_mcts(long tempsmax) {
         final long tic = System.currentTimeMillis();
 
-        List<Coup> coups = coupsPossibles();
+        // List<Coup> coups = coupsPossibles();
 
         //Créer l'arbre de recherche
         Noeud racine = new Noeud(null, null);
@@ -232,17 +234,24 @@ public class Etat {
 //            }
 //        }
         do {
+            //System.err.println(">>> Sélection du noeud à développer");
             Noeud toExpand = selection(racine);
             if (toExpand == null)
                 break; // l'arbre a été complètement exploré, plus aucun noeud n'est sélectionnable
 
-            Noeud expanded = expansion(toExpand);
+            //System.err.println(">>> Développement du noeud sélectionné");
+            Noeud expanded = toExpand.developpement();
+            //System.err.println(">>> Simulation depuis le noeud développé");
             FinDePartie status = simulation(expanded);
             expanded.propagationScore(status);
         } while (System.currentTimeMillis() - tic < tempsmax);
 
         Coup best = null;
         double val = Double.NEGATIVE_INFINITY;
+
+        assert !racine.getEnfants().isEmpty();
+        //System.err.println(">>> Nb enfants racine = " + racine.getEnfants().size());
+
         for (Noeud enf : racine.getEnfants()) {
             double val2 = enf.ratio();
             if (val2 > val) {
@@ -251,8 +260,7 @@ public class Etat {
             }
         }
 
-        // TODO: choose something to actually play
-
+        //System.err.println(">>> Meilleur coup trouvé : " + best);
         jouerCoup(best);
     }
 
@@ -262,16 +270,32 @@ public class Etat {
      * @return <code>null</code> si aucun noeud n'est à développer, sinon le noeud à développer
      */
     private Noeud selection(Noeud racine) {
-        return racine; // TODO
-    }
+        Noeud current = racine, next;
 
-    /**
-     * MCTS : développe le noeud en ajoutant tous les coups possibles en dessous.
-     * @param node le noeud à développer
-     * @return ???
-     */
-    private Noeud expansion(Noeud node) {
-        return node; // TODO
+        do {
+            Coup c = current.selection();
+
+            if (c == null) {
+                // feuille car pas de coups possibles
+                current.setTerminal(true);
+                if (current == racine) {
+                    return null; // arbre fini d'être exploré
+                } else {
+                    // on revient au parent, peut-être qu'il a encore des enfants à explorer
+                    next = current.getParent();
+                }
+            } else {
+                next = current.enfantAvecCoup(c);
+                if (next == null) {
+                    // jamais exploré ici...
+                    next = new Noeud(current, c);
+                }
+            }
+
+            current = next;
+        } while (!current.estFeuille());
+
+        return current;
     }
 
     /**
@@ -280,7 +304,19 @@ public class Etat {
      * @return si la partie est finie ou non
      */
     private FinDePartie simulation(Noeud racineLocale) {
-        return FinDePartie.NON; // TODO
+        Noeud current = racineLocale;
+        FinDePartie fin;
+
+        while ((fin = current.getEtat().testFin()) == FinDePartie.NON) {
+            //System.err.println(current.getEtat());
+            //System.err.println(">>>>> Test de fin = " + fin);
+            current = current.developpement();
+        }
+
+        //System.err.println(current.getEtat());
+        //System.err.println(">>>>> Trouvé " + fin);
+
+        return fin;
     }
 
     /**

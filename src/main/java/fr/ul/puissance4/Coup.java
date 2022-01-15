@@ -1,5 +1,6 @@
 package fr.ul.puissance4;
 
+import java.util.Objects;
 import java.util.Scanner;
 
 public class Coup {
@@ -30,4 +31,23 @@ public class Coup {
         return new Coup(scanner.nextInt()-1);
     }
 
+    @Override
+    public String toString() {
+        return "Coup{" +
+                "colonne=" + colonne +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Coup coup = (Coup) o;
+        return colonne == coup.colonne;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(colonne);
+    }
 }

@@ -3,6 +3,7 @@ package fr.ul.puissance4;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 public class Noeud {
     /**
@@ -54,6 +55,8 @@ public class Noeud {
      */
     private double ucb1;
 
+    private boolean terminal;
+
     public Noeud() {
         this.joueur = 0;
         this.coup = new Coup(0);
@@ -63,13 +66,14 @@ public class Noeud {
         nb_victoires = 0;
         nb_simus = 0;
         ucb1 = 0.d;
+        terminal = false;
     }
 
     /**
      * Crée un nouveau noeud, fils du noeud parent à partir duquel on a joué un coup spécifique.
      *
      * @param parent le noeud parent duquel on joue
-     * @param coup le coup joué pour arriver à ce noeud
+     * @param coup   le coup joué pour arriver à ce noeud
      */
     public Noeud(Noeud parent, Coup coup) {
         this();
@@ -80,6 +84,9 @@ public class Noeud {
             this.etat.jouerCoup(coup);
 
             this.coup = coup;
+
+            // on s'ajoute aux enfants de notre parent
+            parent.enfants.add(this);
 
             // on prend l'autre joueur par rapport au parent
             parent.changerJoueur();
@@ -149,28 +156,31 @@ public class Noeud {
         return joueur;
     }
 
+    public void setTerminal(boolean terminal) {
+        this.terminal = terminal;
+    }
+
     ////////////////////////////////////////////////////////////////////////:
+
+    public void setJoueur(int joueur) {
+        this.joueur = joueur;
+    }
 
     /**
      * Vérifie si un noeud est une feuille/terminal (c'est-à-dire qu'il n'a pas d'enfants).
+     *
      * @return <code>true</code> si le noeud n'a pas d'enfants, <code>false</code> sinon
      */
     public boolean estFeuille() {
         return this.enfants.isEmpty();
     }
 
-    public void setJoueur(int joueur) {
-        this.joueur = joueur;
+    public boolean estTerminal() {
+        return this.terminal;
     }
 
     public void changerJoueur() {
         this.joueur = 1 - this.joueur;
-    }
-
-    public Noeud ajouterEnfant(Coup coup) {
-        Noeud enfant = new Noeud(this, coup);
-        this.enfants.add(enfant);
-        return enfant;
     }
 
     /**
@@ -189,7 +199,7 @@ public class Noeud {
                 return c;
             }
             Noeud nd = n.get();
-            if (!nd.estFeuille()) {
+            if (!nd.estTerminal()) {
                 // noeud non terminal mais déjà (partiellement) exploré
                 double ucb1 = nd.calculerUCB1();
                 if (ucb1 > val) {
@@ -200,6 +210,34 @@ public class Noeud {
         }
 
         return best;
+    }
+
+    /**
+     * Récupère l'enfant atteint par le coup donné depuis la racine locale <code>this</code>.
+     *
+     * @param c le coup menant à l'enfant
+     * @return le noeud enfant s'il existe, sinon <code>null</code>
+     */
+    public Noeud enfantAvecCoup(Coup c) {
+        return this.enfants.stream().filter(n -> n.coup.equals(c)).findFirst().orElse(null);
+    }
+
+    /**
+     * MCTS : développe le noeud en ajoutant tous les coups possibles en dessous.
+     * @return le noeud développé à partir duquel faire tourner la simulation
+     */
+    public Noeud developpement() {
+        if (this.estTerminal()) // si on est une feuille, il y a probablement rien à développer
+            return this;
+
+        List<Coup> possibles = this.etat.coupsPossibles();
+        if (possibles.isEmpty())
+            return null;
+        Coup c = possibles.get(new Random().nextInt(possibles.size()));
+        if (c == null)
+            return this; // fin de la partie
+
+        return new Noeud(this, c);
     }
 
     /**
@@ -228,18 +266,17 @@ public class Noeud {
      * Propage les scores obtenus le long de l'arbre, en partant de la feuille, jusqu'à la racine.
      */
     public void propagationScore(FinDePartie score) {
-        // TODO: use `score` somewhere?
         Noeud ptr = this;
 
         ptr.nb_simus += 1;
-        if (this.joueur == ptr.joueur) ptr.nb_victoires += 1;
+        if (ptr.joueur == Etat.COMPUTER_PLAYER && score == FinDePartie.ORDI_GAGNE) ptr.nb_victoires += 1;
         ptr.calculerUCB1();
 
         while (ptr.parent != null) {
             ptr = ptr.parent;
 
             ptr.nb_simus += 1;
-            if (this.joueur == ptr.joueur) ptr.nb_victoires += 1;
+            if (ptr.joueur == Etat.COMPUTER_PLAYER && score == FinDePartie.ORDI_GAGNE) ptr.nb_victoires += 1;
             ptr.calculerUCB1();
         }
     }
