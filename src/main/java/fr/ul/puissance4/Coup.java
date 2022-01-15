@@ -1,4 +1,5 @@
-import java.util.List;
+package fr.ul.puissance4;
+
 import java.util.Scanner;
 
 public class Coup {
@@ -21,7 +22,7 @@ public class Coup {
 
     /**
      * Demande à l'humain quel coup jouer
-     * @return le Coup demandé
+     * @return le fr.ul.puissance4.Coup demandé
      */
     public static Coup demanderCoup(){
         System.out.println("\n \t Quelle colonne ? ");

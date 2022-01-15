@@ -1,6 +1,7 @@
+package fr.ul.puissance4;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class Etat {
     public static final int LIGNE = 6;
@@ -13,7 +14,7 @@ public class Etat {
     private char plateau[][]; //ligne/colonne
 
     /**
-     * Constructeur de l'Etat initial
+     * Constructeur de l'fr.ul.puissance4.Etat initial
      */
     public Etat() {
         joueur = COMPUTER_PLAYER; //L'ordinateur qui commence :)
@@ -61,9 +62,9 @@ public class Etat {
     }
 
     /**
-     * Copie de l'Etat en cours
+     * Copie de l'fr.ul.puissance4.Etat en cours
      *
-     * @return un Etat
+     * @return un fr.ul.puissance4.Etat
      */
     public Etat copieEtat() {
         char tab[][] = new char[LIGNE][COLONNE];
@@ -105,7 +106,7 @@ public class Etat {
                 this.getPlateau()[i-1][coup.getColonne()] = ' ' ;
             }
         }
-        //while (i< Etat.LIGNE && this.getPlateau()[i++][coup.getColonne()] == ' ');
+        //while (i< fr.ul.puissance4.Etat.LIGNE && this.getPlateau()[i++][coup.getColonne()] == ' ');
         //this.getPlateau()[i-1][coup.getColonne()] = joueur == 0 ? 'O' : 'X' ;
 
         this.changerJoueur();
@@ -164,13 +165,13 @@ public class Etat {
         racine.setEtat(copieEtat());
 
         //Créer les premiers noeuds:
-//        for (Coup coup: coups) {
+//        for (fr.ul.puissance4.Coup coup: coups) {
 //            enfant = racine.ajouterEnfant(coup);
 //
 //            //On vérifie si au tour suivant, l'ordi peut gagner
 //            //Ça en deviendra le meilleur coup
-//            FinDePartie fin = enfant.getEtat().testFin();
-//            if(fin == FinDePartie.ORDI_GAGNE){
+//            fr.ul.puissance4.FinDePartie fin = enfant.getEtat().testFin();
+//            if(fin == fr.ul.puissance4.FinDePartie.ORDI_GAGNE){
 //                meilleur_coup = coup;
 //            }else{
 //                //Faire d'autre vérification
