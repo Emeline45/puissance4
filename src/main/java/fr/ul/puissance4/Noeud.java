@@ -38,7 +38,7 @@ public class Noeud {
      * <p>
      * Vide si le noeud est une feuille.
      */
-    private List<Noeud> enfants; // Liste d'enfants : chaque enfant correspond à un coup possible
+    private final List<Noeud> enfants; // Liste d'enfants : chaque enfant correspond à un coup possible
     //Pour MCTS
     /**
      * Le nombre de victoires pour le joueur courant qui ont eu lieu en dessous de ce noeud.
@@ -54,7 +54,11 @@ public class Noeud {
      * @see #calculerUCB1()
      */
     private double ucb1;
-
+    /**
+     * <code>true</code> si tous les noeuds fils ont été explorés.
+     * <p>
+     * Permet de spécifier à l'algorithme MCTS qu'il n'est plus utile d'aller plus bas dans le noeud.
+     */
     private boolean terminal;
 
     public Noeud() {
@@ -89,9 +93,8 @@ public class Noeud {
             parent.enfants.add(this);
 
             // on prend l'autre joueur par rapport au parent
-            parent.changerJoueur();
             this.joueur = parent.joueur;
-            parent.changerJoueur();
+            this.changerJoueur();
         } else {
             this.etat = null;
             this.coup = null;
@@ -108,10 +111,6 @@ public class Noeud {
         return coup;
     }
 
-    public void setCoup(Coup coup) {
-        this.coup = coup;
-    }
-
     public Etat getEtat() {
         return etat;
     }
@@ -124,50 +123,20 @@ public class Noeud {
         return parent;
     }
 
-    public void setParent(Noeud parent) {
-        this.parent = parent;
-    }
-
     public List<Noeud> getEnfants() {
         return enfants;
     }
 
-    public void setEnfants(List<Noeud> enfants) {
-        this.enfants = enfants;
-    }
-
-    public int getNb_victoires() {
-        return nb_victoires;
-    }
-
-    public void setNb_victoires(int nb_victoires) {
-        this.nb_victoires = nb_victoires;
-    }
-
-    public int getNb_simus() {
-        return nb_simus;
-    }
-
-    public void setNb_simus(int nb_simus) {
-        this.nb_simus = nb_simus;
-    }
-
-    public int getJoueur() {
-        return joueur;
-    }
-
+    /**
+     * Rend le noeud terminal, c'est-à-dire qu'il n'est pas nécessaire de visiter ses enfants.
+     * @param terminal la valeur de l'indicateur
+     */
     public void setTerminal(boolean terminal) {
         this.terminal = terminal;
     }
 
-    ////////////////////////////////////////////////////////////////////////:
-
-    public void setJoueur(int joueur) {
-        this.joueur = joueur;
-    }
-
     /**
-     * Vérifie si un noeud est une feuille/terminal (c'est-à-dire qu'il n'a pas d'enfants).
+     * Vérifie si un noeud est une feuille (c'est-à-dire qu'il n'a pas d'enfants).
      *
      * @return <code>true</code> si le noeud n'a pas d'enfants, <code>false</code> sinon
      */
@@ -175,10 +144,17 @@ public class Noeud {
         return this.enfants.isEmpty();
     }
 
+    /**
+     * Vérifie si le noeud est terminal.
+     * @return <code>true</code> si le noeud n'a plus besoin d'être exploré, <code>false</code> sinon
+     */
     public boolean estTerminal() {
         return this.terminal;
     }
 
+    /**
+     * Change le joueur jouant dans le noeud courant.
+     */
     public void changerJoueur() {
         this.joueur = 1 - this.joueur;
     }
@@ -227,12 +203,12 @@ public class Noeud {
      * @return le noeud développé à partir duquel faire tourner la simulation
      */
     public Noeud developpement() {
-        if (this.estTerminal()) // si on est une feuille, il y a probablement rien à développer
+        if (this.estTerminal()) // si on est terminal, il y a probablement rien à développer
             return this;
 
         List<Coup> possibles = this.etat.coupsPossibles();
         if (possibles.isEmpty())
-            return null;
+            return this;
         Coup c = possibles.get(new Random().nextInt(possibles.size()));
         if (c == null)
             return this; // fin de la partie
@@ -283,7 +259,7 @@ public class Noeud {
 
     /**
      * Calcule la valeur de <code>B(i)</code> selon la formule
-     * <pre>
+     * <pre>{@code
      *        ⎧
      *        ⎪                         ,──────────────────────
      *        ⎪      w(i)              /   ln N(parent(i))
@@ -294,7 +270,7 @@ public class Noeud {
      *        ⎪
      *        ⎪   + ∞                                                  sinon
      *        ⎩
-     * </pre>
+     * }</pre>
      *
      * @return La valeur de <code>B(i)</code> pour le noeud courant (<code>this</code>).
      * @see Noeud#C

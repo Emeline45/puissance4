@@ -5,20 +5,18 @@ import java.util.Scanner;
 
 public class Coup {
     /* Le joueur ne peut choisir que la colonne dans le puissance 4.*/
-    private int colonne;
-
-    public Coup(){colonne = -1;}
+    private final int colonne;
 
     public Coup(int j){
         colonne = j;
     }
 
+    /**
+     * Récupère la colonne jouée dans le coup
+     * @return le numéro de la colonne
+     */
     public int getColonne() {
         return colonne;
-    }
-
-    public void setColonne(int colonne) {
-        this.colonne = colonne;
     }
 
     /**
@@ -26,7 +24,7 @@ public class Coup {
      * @return le Coup demandé
      */
     public static Coup demanderCoup(){
-        System.out.println("\n \t Quelle colonne ? ");
+        System.out.println("\n\tQuelle colonne ? ");
         Scanner scanner = new Scanner(System.in);
         return new Coup(scanner.nextInt()-1);
     }

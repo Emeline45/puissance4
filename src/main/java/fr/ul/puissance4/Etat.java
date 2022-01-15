@@ -1,9 +1,7 @@
 package fr.ul.puissance4;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 
 public class Etat {
     public static final int LIGNE = 6;
@@ -11,18 +9,17 @@ public class Etat {
 
     public static final int HUMAN_PLAYER = 0;
     public static final int COMPUTER_PLAYER = 1;
-
-    /**
-     * Contient le joueur actuellement en train de jouer.
-     * Peut être soit {@link #HUMAN_PLAYER} soit {@link #COMPUTER_PLAYER}.
-     */
-    private int joueur; //à qui de jouer
     /**
      * L'état actuel de la grille du puissance 4.
      * <p>
      * Taille : {@link #LIGNE} × {@link #COLONNE}
      */
     private final char[][] plateau; //ligne/colonne
+    /**
+     * Contient le joueur actuellement en train de jouer.
+     * Peut être soit {@link #HUMAN_PLAYER} soit {@link #COMPUTER_PLAYER}.
+     */
+    private int joueur; //à qui de jouer
 
     /**
      * Crée un état vide dans lequel l'ordinateur commence.
@@ -42,6 +39,7 @@ public class Etat {
 
     /**
      * Crée un état vide dans lequel le joueur donné commence.
+     *
      * @param joueur le joueur qui commence
      */
     public Etat(int joueur) {
@@ -52,7 +50,8 @@ public class Etat {
 
     /**
      * Crée un nouvelle état à partir d'un joueur et d'un plateau.
-     * @param j le joueur dans l'état (soit {@link #HUMAN_PLAYER} soit {@link #COMPUTER_PLAYER})
+     *
+     * @param j   le joueur dans l'état (soit {@link #HUMAN_PLAYER} soit {@link #COMPUTER_PLAYER})
      * @param tab le plateau de taille {@link #LIGNE} × {@link #COLONNE}
      */
     private Etat(int j, char[][] tab) {
@@ -103,6 +102,7 @@ public class Etat {
 
     /**
      * Récupère tous les coups possibles dans la grille.
+     *
      * @return la liste contenant tous les coups possibles (de taille ≤ 9)
      */
     public List<Coup> coupsPossibles() {
@@ -118,12 +118,16 @@ public class Etat {
 
     }
 
+    /**
+     * Change le joueur qui joue dans l'état actuel.
+     */
     public void changerJoueur() {
         this.joueur = 1 - this.joueur;
     }
 
     /**
      * Pose le pion à la colonne indiquée par le coup, si celui-ci peut être placé (si on ne déborde pas du plateau).
+     *
      * @param coup le numéro de colonne où on souhaite poser le pion
      * @return <code>true</code> si le pion a été joué, <code>false</code> sinon.
      */
@@ -142,8 +146,6 @@ public class Etat {
                 this.getPlateau()[i - 1][coup.getColonne()] = ' ';
             }
         }
-        //while (i< fr.ul.puissance4.Etat.LIGNE && this.getPlateau()[i++][coup.getColonne()] == ' ');
-        //this.getPlateau()[i-1][coup.getColonne()] = joueur == 0 ? 'O' : 'X' ;
 
         this.changerJoueur();
         return true;
@@ -153,17 +155,17 @@ public class Etat {
      * Teste si l'état correspond à une partie finie.
      * <p>
      * Une partie est finie si : <ol>
-     *     <li>Soit toutes les cases sont occupées et il n'y a pas de gagnant</li>
-     *     <li>Le joueur <code>O</code> a réussi à aligner 4 de ses pions</li>
-     *     <li>Le joueur <code>X</code> a aligné 4 de ses pions</li>
-     *     <li>Aucune des 3 possibilités avant (partie non finie)</li>
+     * <li>Soit toutes les cases sont occupées et il n'y a pas de gagnant</li>
+     * <li>Le joueur <code>O</code> a réussi à aligner 4 de ses pions</li>
+     * <li>Le joueur <code>X</code> a aligné 4 de ses pions</li>
+     * <li>Aucune des 3 possibilités avant (partie non finie)</li>
      * </ol>
      *
      * @return <ol>
-     *     <li>{@link FinDePartie#MATCH_NUL}</li>
-     *     <li>{@link FinDePartie#HUMAIN_GAGNE}</li>
-     *     <li>{@link FinDePartie#ORDI_GAGNE}</li>
-     *     <li>{@link FinDePartie#NON}</li>
+     * <li>{@link FinDePartie#MATCH_NUL}</li>
+     * <li>{@link FinDePartie#HUMAIN_GAGNE}</li>
+     * <li>{@link FinDePartie#ORDI_GAGNE}</li>
+     * <li>{@link FinDePartie#NON}</li>
      * </ol>
      */
     public FinDePartie testFin() {
@@ -207,51 +209,39 @@ public class Etat {
     }
 
     /**
-     * Fais jouer l'ordinateur sur l'état actuel à l'aide de l'algorithme MCTS UCT.
+     * Fait jouer l'ordinateur sur l'état actuel à l'aide de l'algorithme MCTS UCT.
      *
      * @param tempsmax le temps maximum en ms durant lequel l'algorithme a le droit de s'exécuter
      */
     public void ordijoue_mcts(long tempsmax) {
         final long tic = System.currentTimeMillis();
 
-        // List<Coup> coups = coupsPossibles();
-
         //Créer l'arbre de recherche
         Noeud racine = new Noeud(null, null);
         racine.setEtat(copieEtat());
 
-        //Créer les premiers noeuds:
-//        for (fr.ul.puissance4.Coup coup: coups) {
-//            enfant = racine.ajouterEnfant(coup);
-//
-//            //On vérifie si au tour suivant, l'ordi peut gagner
-//            //Ça en deviendra le meilleur coup
-//            fr.ul.puissance4.FinDePartie fin = enfant.getEtat().testFin();
-//            if(fin == fr.ul.puissance4.FinDePartie.ORDI_GAGNE){
-//                meilleur_coup = coup;
-//            }else{
-//                //Faire d'autre vérification
-//            }
-//        }
         do {
-            //System.err.println(">>> Sélection du noeud à développer");
+            // MCTS :
+            // - sélection du noeud le + propice à être développé
+            // - développement du noeud
+            // - simulation aléatoire d'une partie à partir de ce noeud
+            // - propagation du score jusqu'à la racine de l'arbre
+
             Noeud toExpand = selection(racine);
             if (toExpand == null)
                 break; // l'arbre a été complètement exploré, plus aucun noeud n'est sélectionnable
 
-            //System.err.println(">>> Développement du noeud sélectionné");
             Noeud expanded = toExpand.developpement();
-            //System.err.println(">>> Simulation depuis le noeud développé");
             FinDePartie status = simulation(expanded);
             expanded.propagationScore(status);
+
+            // on applique MCTS jusqu'à avoir dépassé le temps limite
         } while (System.currentTimeMillis() - tic < tempsmax);
 
         Coup best = null;
         double val = Double.NEGATIVE_INFINITY;
 
-        assert !racine.getEnfants().isEmpty();
-        //System.err.println(">>> Nb enfants racine = " + racine.getEnfants().size());
-
+        // on récupère le meilleur coup à jouer (celui qui mène au + grand nombre de parties gagnées)
         for (Noeud enf : racine.getEnfants()) {
             double val2 = enf.ratio();
             if (val2 > val) {
@@ -259,13 +249,13 @@ public class Etat {
                 best = enf.getCoup();
             }
         }
-
-        //System.err.println(">>> Meilleur coup trouvé : " + best);
+        // et on joue ce coup
         jouerCoup(best);
     }
 
     /**
      * MCTS : sélection du noeud à développer.
+     *
      * @param racine la racine de l'arbre à partir de laquelle chercher le noeud
      * @return <code>null</code> si aucun noeud n'est à développer, sinon le noeud à développer
      */
@@ -300,6 +290,7 @@ public class Etat {
 
     /**
      * MCTS : simule une partie aléatoirement à partir d'un noeud
+     *
      * @param racineLocale le noeud servant de racine locale à la simulation aléatoire
      * @return si la partie est finie ou non
      */
@@ -308,14 +299,11 @@ public class Etat {
         FinDePartie fin;
 
         while ((fin = current.getEtat().testFin()) == FinDePartie.NON) {
-            //System.err.println(current.getEtat());
-            //System.err.println(">>>>> Test de fin = " + fin);
+            // tant que la partie n'est pas finie, on continue de simuler aléatoirement
             current = current.developpement();
         }
 
-        //System.err.println(current.getEtat());
-        //System.err.println(">>>>> Trouvé " + fin);
-
+        // et on donne le score final (match nul, gagnant, ou perdant)
         return fin;
     }
 

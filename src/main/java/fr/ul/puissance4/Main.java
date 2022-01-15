@@ -16,24 +16,23 @@ public class Main {
         etat.setJoueur(scanner.nextInt());
 
         //boucle de jeu
-        do{
+        do {
           System.out.println(etat);
 
-           if(etat.getJoueur() == Etat.HUMAN_PLAYER){
+           if(etat.getJoueur() == Etat.HUMAN_PLAYER) {
                //tour de l'humain
-               do{
+               do {
                    coup = Coup.demanderCoup();
                } while (!etat.jouerCoup(coup));
-           }else{
+           } else {
                //tour de l'ordinateur
                etat.ordijoue_mcts(5000 /* 5s */);
            }
-           fin = etat.testFin();
-        } while (fin == FinDePartie.NON);
+        } while ((fin = etat.testFin()) == FinDePartie.NON);
 
         System.out.println(etat);
 
-        if(fin == FinDePartie.ORDI_GAGNE) System.out.println("**L'ordinateur a gagné **");
+        if (fin == FinDePartie.ORDI_GAGNE) System.out.println("**L'ordinateur a gagné **");
         else if (fin == FinDePartie.MATCH_NUL) System.out.println("Match nul !");
         else System.out.println("**Bravo, l'ordinateur a perdu **");
 
