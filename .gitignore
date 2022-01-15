@@ -1,3 +1,7 @@
+# Some files/directories produced by IntelliJ
 .idea/
 out/ 
 *.iml
+
+# Maven specific build directory
+target/
