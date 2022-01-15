@@ -8,6 +8,7 @@ pkgs.mkShell {
   buildInputs = with pkgs; [
     jetbrains.idea-community
     jdk11
+    maven
   ];
 
   JAVA_HOME = "${pkgs.jdk11}/lib/openjdk";
