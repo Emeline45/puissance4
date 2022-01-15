@@ -34,7 +34,7 @@ public class Main {
         System.out.println(etat);
 
         if(fin == FinDePartie.ORDI_GAGNE) System.out.println("**L'ordinateur a gagné **");
-        else if (fin == FinDePartie.MATCHNUL) System.out.println("Match nul !");
+        else if (fin == FinDePartie.MATCH_NUL) System.out.println("Match nul !");
         else System.out.println("**Bravo, l'ordinateur a perdu **");
 
     }

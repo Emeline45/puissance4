@@ -11,7 +11,7 @@ public class Etat {
     public static final int COMPUTER_PLAYER = 1;
 
     private int joueur; //à qui de jouer
-    private char plateau[][]; //ligne/colonne
+    private char[][] plateau; //ligne/colonne
 
     /**
      * Constructeur de l'fr.ul.puissance4.Etat initial
@@ -29,7 +29,7 @@ public class Etat {
         }
     }
 
-    public Etat(int j, char tab[][]) {
+    public Etat(int j, char[][] tab) {
         this.joueur = j;
         this.plateau = tab;
     }
@@ -67,11 +67,9 @@ public class Etat {
      * @return un fr.ul.puissance4.Etat
      */
     public Etat copieEtat() {
-        char tab[][] = new char[LIGNE][COLONNE];
+        char[][] tab = new char[LIGNE][COLONNE];
         for(int i = 0; i< LIGNE; i++){
-            for(int j = 0; j < COLONNE; j++){
-                tab[i][j] = plateau[i][j];
-            }
+            System.arraycopy(plateau[i], 0, tab[i], 0, COLONNE);
         }
         int jour = joueur;
         return new Etat(jour, tab);
@@ -95,6 +93,9 @@ public class Etat {
     }
 
     public boolean jouerCoup(Coup coup){
+        if (coup == null)
+            return false;
+
         //verifie que la ligne n'est pas pleine
         if(this.getPlateau()[0][coup.getColonne()] != ' ')
             return false;
@@ -149,7 +150,7 @@ public class Etat {
                 }
             }
         }
-        if(n == COLONNE*LIGNE) return FinDePartie.MATCHNUL;
+        if(n == COLONNE*LIGNE) return FinDePartie.MATCH_NUL;
         return FinDePartie.NON;
     }
 
