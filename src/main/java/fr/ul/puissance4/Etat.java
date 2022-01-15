@@ -238,7 +238,7 @@ public class Etat {
 
             Noeud expanded = expansion(toExpand);
             FinDePartie status = simulation(expanded);
-            expanded.propagationScore();
+            expanded.propagationScore(status);
         } while (System.currentTimeMillis() - tic < tempsmax);
 
         Coup best = null;
@@ -256,14 +256,29 @@ public class Etat {
         jouerCoup(best);
     }
 
+    /**
+     * MCTS : sélection du noeud à développer.
+     * @param racine la racine de l'arbre à partir de laquelle chercher le noeud
+     * @return <code>null</code> si aucun noeud n'est à développer, sinon le noeud à développer
+     */
     private Noeud selection(Noeud racine) {
         return racine; // TODO
     }
 
+    /**
+     * MCTS : développe le noeud en ajoutant tous les coups possibles en dessous.
+     * @param node le noeud à développer
+     * @return ???
+     */
     private Noeud expansion(Noeud node) {
         return node; // TODO
     }
 
+    /**
+     * MCTS : simule une partie aléatoirement à partir d'un noeud
+     * @param racineLocale le noeud servant de racine locale à la simulation aléatoire
+     * @return si la partie est finie ou non
+     */
     private FinDePartie simulation(Noeud racineLocale) {
         return FinDePartie.NON; // TODO
     }

@@ -151,6 +151,14 @@ public class Noeud {
 
     ////////////////////////////////////////////////////////////////////////:
 
+    /**
+     * Vérifie si un noeud est une feuille/terminal (c'est-à-dire qu'il n'a pas d'enfants).
+     * @return <code>true</code> si le noeud n'a pas d'enfants, <code>false</code> sinon
+     */
+    public boolean estFeuille() {
+        return this.enfants.isEmpty();
+    }
+
     public void setJoueur(int joueur) {
         this.joueur = joueur;
     }
@@ -181,7 +189,7 @@ public class Noeud {
                 return c;
             }
             Noeud nd = n.get();
-            if (nd.enfants.size() > 0) {
+            if (!nd.estFeuille()) {
                 // noeud non terminal mais déjà (partiellement) exploré
                 double ucb1 = nd.calculerUCB1();
                 if (ucb1 > val) {
@@ -219,7 +227,8 @@ public class Noeud {
     /**
      * Propage les scores obtenus le long de l'arbre, en partant de la feuille, jusqu'à la racine.
      */
-    public void propagationScore() {
+    public void propagationScore(FinDePartie score) {
+        // TODO: use `score` somewhere?
         Noeud ptr = this;
 
         ptr.nb_simus += 1;
