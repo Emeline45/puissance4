@@ -295,7 +295,7 @@ public class Etat {
                     e1 = enf;
                 }
             }
-            System.out.println("\n La probabilité de victoire est : " + e1.ratio());
+            System.out.println("\n La probabilité de victoire est : " + e1.getNb_victoires() + " / " + e1.getNb_simus() + " = " + e1.ratio());
             jouerCoup(meilleur_coup);
         }
         else{
@@ -310,7 +310,7 @@ public class Etat {
                 }
             } // et on joue ce coup
 
-            System.out.println("\n La probabilité de victoire est : " + e.ratio());
+            System.out.println("\n La probabilité de victoire est : " + e.getNb_victoires() + " / " + e.getNb_simus() + " = " + e.ratio());
             jouerCoup(best);
         }
 
