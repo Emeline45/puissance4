@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Etat {
+    private static final int STRAT_MAX = 0;
+    private static final int STRAT_ROBUSTE = 1;
+
     public static final int LIGNE = 6;
     public static final int COLONNE = 7;
 
@@ -20,6 +23,11 @@ public class Etat {
      * Peut être soit {@link #HUMAN_PLAYER} soit {@link #COMPUTER_PLAYER}.
      */
     private int joueur; //à qui de jouer
+
+    /**
+     * Undocumented
+     */
+    private final int strategy = STRAT_MAX;
 
     /**
      * Crée un état vide dans lequel l'ordinateur commence.
@@ -263,16 +271,14 @@ public class Etat {
         progress.interrupt();
 
         System.out.println("\n Le nombre de simulation réalisée : " + racine.getNb_simus());
-        Coup best = null;
-        double val = Double.NEGATIVE_INFINITY;
 
 
         //Vérifier que le joueur ne va pas gagner au prochain tour !
-        Noeud racineE = new Noeud();
-        racineE = new Noeud(null, null);
+        Noeud racineE = new Noeud(null, null);
         racineE.setEtat(copieEtat());
+
         List<Coup> coups = coupsPossibles();
-        Noeud enfant = new Noeud();
+        Noeud enfant;
         Coup meilleur_coup = null;
         racineE.getEtat().setJoueur(HUMAN_PLAYER);
 
@@ -299,10 +305,12 @@ public class Etat {
             jouerCoup(meilleur_coup);
         }
         else{
+            Coup best = null;
+            double val = Double.NEGATIVE_INFINITY;
             // on récupère le meilleur coup à jouer (celui qui mène au + grand nombre de parties gagnées)
             Noeud e = null;
             for (Noeud enf : racine.getEnfants()) {
-                double val2 = enf.ratio();
+                @SuppressWarnings("ConstantConditions") double val2 = strategy == STRAT_MAX ? enf.ratio() : (double) enf.getNb_simus();
                 if (val2 > val) {
                     val = val2;
                     best = enf.getCoup();
@@ -310,6 +318,7 @@ public class Etat {
                 }
             } // et on joue ce coup
 
+            assert e != null;
             System.out.println("\n La probabilité de victoire est : " + e.getNb_victoires() + " / " + e.getNb_simus() + " = " + e.ratio());
             jouerCoup(best);
         }
@@ -348,7 +357,7 @@ public class Etat {
             }
 
             current = next;
-        } while (!current.estFeuille());
+        } while (!current.estFeuille() && !current.estTerminal());
 
         return current;
     }
@@ -367,8 +376,9 @@ public class Etat {
             // tant que la partie n'est pas finie, on continue de simuler aléatoirement
             current = current.developpement();
         }
+        current.setTerminal(true);
 
-        // et on donne le score final (match nul, gagnant, ou perdant)
+        // et on donne le score final (match nul, gagnant ou perdant)
         return fin;
     }
 

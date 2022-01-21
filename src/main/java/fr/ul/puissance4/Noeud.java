@@ -184,6 +184,9 @@ public class Noeud {
         Coup best = null;
         double val = Double.NEGATIVE_INFINITY;
 
+        if (this.estTerminal())
+            return null;
+
         for (Coup c : this.etat.coupsPossibles()) {
             Optional<Noeud> n = this.enfants.stream().filter(node -> node.coup.equals(c)).findFirst();
             if (n.isEmpty()) {
