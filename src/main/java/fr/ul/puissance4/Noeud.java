@@ -194,7 +194,7 @@ public class Noeud {
                 return c;
             }
             Noeud nd = n.get();
-            if (!nd.estTerminal()) {
+            if (!nd.estTerminal() || nd.nb_victoires == (this.joueur == Etat.COMPUTER_PLAYER ? 1 : 0)) {
                 // noeud non terminal mais déjà (partiellement) exploré
                 double ucb1 = nd.calculerUCB1();
                 if (ucb1 > val) {
@@ -280,14 +280,14 @@ public class Noeud {
      * Calcule la valeur de <code>B(i)</code> selon la formule
      * <pre>{@code
      *        ⎧
-     *        ⎪                         ,──────────────────────
-     *        ⎪      w(i)              /   ln N(parent(i))
-     * B(i) = ⎨   ± ────── + c × \    /  ────────────────────          si N(i) ≠ 0 ∧ parent(i) existe
-     *        ⎪      N(i)         \  /          N(i)
-     *        ⎪                    \/
+     *        ⎪                       ,──────────────────────
+     *        ⎪    w(i)              /   ln N(parent(i))
+     * B(i) = ⎨   ────── + c × \    /  ────────────────────          si N(i) ≠ 0 ∧ parent(i) existe
+     *        ⎪    N(i)         \  /          N(i)
+     *        ⎪                  \/
      *        ⎪
      *        ⎪
-     *        ⎪   + ∞                                                  sinon
+     *        ⎪   + ∞                                                sinon
      *        ⎩
      * }</pre>
      *
@@ -297,7 +297,7 @@ public class Noeud {
     private double calculerUCB1() {
         if (nb_simus != 0 && this.parent != null) {
             ucb1 = ((double) nb_victoires / (double) nb_simus) + C * Math.sqrt(Math.log(this.parent.nb_simus) / nb_simus);
-            ucb1 = this.joueur == Etat.COMPUTER_PLAYER ? +ucb1 : -ucb1;
+            //ucb1 = this.joueur == Etat.COMPUTER_PLAYER ? +ucb1 : -ucb1;
         } else
             ucb1 = Double.POSITIVE_INFINITY;
 

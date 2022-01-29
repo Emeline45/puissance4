@@ -4,14 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Etat {
-    private static final int STRAT_MAX = 0;
-    private static final int STRAT_ROBUSTE = 1;
-
     public static final int LIGNE = 6;
     public static final int COLONNE = 7;
-
     public static final int HUMAN_PLAYER = 0;
     public static final int COMPUTER_PLAYER = 1;
+    private static final int STRAT_MAX = 0;
+    private static final int STRAT_ROBUSTE = 1;
     /**
      * L'état actuel de la grille du puissance 4.
      * <p>
@@ -19,15 +17,14 @@ public class Etat {
      */
     private final char[][] plateau; //ligne/colonne
     /**
+     * Undocumented
+     */
+    private final int strategy = STRAT_MAX;
+    /**
      * Contient le joueur actuellement en train de jouer.
      * Peut être soit {@link #HUMAN_PLAYER} soit {@link #COMPUTER_PLAYER}.
      */
     private int joueur; //à qui de jouer
-
-    /**
-     * Undocumented
-     */
-    private final int strategy = STRAT_MAX;
 
     /**
      * Crée un état vide dans lequel l'ordinateur commence.
@@ -283,17 +280,17 @@ public class Etat {
         racineE.getEtat().setJoueur(HUMAN_PLAYER);
 
         Noeud e1 = null;
-        for (Coup coup: coups) {
+        for (Coup coup : coups) {
             enfant = new Noeud(racineE, coup);
 
             FinDePartie fin = enfant.getEtat().testFin();
-            if(fin == FinDePartie.HUMAIN_GAGNE){
+            if (fin == FinDePartie.HUMAIN_GAGNE) {
                 meilleur_coup = coup;
                 e1 = enfant;
             }
         }
         //Si le joueur peut gagner
-        if(meilleur_coup != null){
+        if (meilleur_coup != null) {
             //Vérifier si l'ordi peut gagner (PRIORITAIRE)
             for (Noeud enf : racine.getEnfants()) {
                 if (enf.getEtat().testFin() == FinDePartie.ORDI_GAGNE) {
@@ -303,8 +300,7 @@ public class Etat {
             }
             System.out.println("\n La probabilité de victoire est : " + e1.getNb_victoires() + " / " + e1.getNb_simus() + " = " + e1.ratio());
             jouerCoup(meilleur_coup);
-        }
-        else{
+        } else {
             Coup best = null;
             double val = Double.NEGATIVE_INFINITY;
             // on récupère le meilleur coup à jouer (celui qui mène au + grand nombre de parties gagnées)
@@ -322,7 +318,6 @@ public class Etat {
             System.out.println("\n La probabilité de victoire est : " + e.getNb_victoires() + " / " + e.getNb_simus() + " = " + e.ratio());
             jouerCoup(best);
         }
-
 
 
     }
@@ -370,9 +365,9 @@ public class Etat {
      */
     private FinDePartie simulation(Noeud racineLocale) {
         Noeud current = racineLocale;
-        FinDePartie fin;
+        FinDePartie fin = current.estTerminal() ? (current.getNb_victoires() == 1 ? FinDePartie.ORDI_GAGNE : FinDePartie.HUMAIN_GAGNE) : FinDePartie.NON;
 
-        while ((fin = current.getEtat().testFin()) == FinDePartie.NON) {
+        while (!current.estTerminal() && (fin = current.getEtat().testFin()) == FinDePartie.NON) {
             // tant que la partie n'est pas finie, on continue de simuler aléatoirement
             current = current.developpement();
         }
